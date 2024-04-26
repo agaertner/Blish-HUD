@@ -111,10 +111,19 @@ namespace Blish_HUD.Modules.Managers {
 
             if (fontDataLength > 0) {
                 using var ctx = GameService.Graphics.LendGraphicsDeviceContext();
-                var bakeResult = TtfFontBaker.Bake(fontData, fontSize, textureSize, textureSize, ContentService.Gw2CharacterRange);
-                return bakeResult.CreateSpriteFont(ctx.GraphicsDevice);
+                try {
+                    var result = TtfFontBaker.Bake(fontData, fontSize, textureSize, textureSize,
+                                                       new[] {
+                                                           CharacterRange.BasicLatin,
+                                                           CharacterRange.Latin1Supplement,
+                                                           CharacterRange.LatinExtendedA
+                                                       }).CreateSpriteFont(ctx.GraphicsDevice);
+                    Logger.Debug("Successfully loaded font {dataReaderFilePath}.", _reader.GetPathRepresentation(fontPath));
+                    return result;
+                } catch (Exception e) {
+                    Logger.Warn(e, "Unable to load font {dataReaderFilePath}.", _reader.GetPathRepresentation(fontPath));
+                }
             }
-
             return null;
         }
 
