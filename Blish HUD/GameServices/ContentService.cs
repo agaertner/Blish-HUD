@@ -7,6 +7,7 @@ using MonoGame.Extended.BitmapFonts;
 using SpriteFontPlus;
 using System;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
 using System.Text.RegularExpressions;
@@ -104,8 +105,27 @@ namespace Blish_HUD {
 
         public DatAssetCache DatAssetCache { get; private set; }
 
+        internal IReadOnlyList<CharacterRange> Gw2CharacterRanges { get; private set; }
+
         internal ContentService() {
             SetServiceModules(this.DatAssetCache = new DatAssetCache(this));
+
+            Gw2CharacterRanges = new List<CharacterRange> {
+                CharacterRange.BasicLatin,
+                CharacterRange.Latin1Supplement,
+                CharacterRange.LatinExtendedA,
+                new CharacterRange('₣', '₾'), // Currency Symbols
+                new CharacterRange('←', '⇿'), // Arrows 
+                new CharacterRange('∀', '⋿'), // Mathematical Operators
+                new CharacterRange('①', '⓿'), // Enclosed Alphanumerics
+                new CharacterRange('─', '╿'), // Box Drawing
+                new CharacterRange('■', '◿'), // Geometric Shapes
+                // Cause crash with only windows shipped .NET Runtime.
+                //new CharacterRange('\u2000', '\u206F'), // General Punctuation
+                //new CharacterRange('℀', '⅏'), // Letterlike Symbols
+                //new CharacterRange('⌀', '⏺'), // Miscellaneous Technical
+                //new CharacterRange('☀', '♪'), // Miscellaneous Symbols
+            };
         }
 
         protected override void Initialize() {
