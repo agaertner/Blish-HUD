@@ -9,7 +9,6 @@ namespace Blish_HUD.Content {
     /// Extends <see cref="BitmapFont"/> to allow disposing of its glyph lookup texture.
     /// </summary>
     public class BitmapFontEx : BitmapFont, IDisposable {
-
         private readonly Texture2D _texture;
 
         /// <summary>

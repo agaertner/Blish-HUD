@@ -7,7 +7,6 @@ using System.Collections.Generic;
 
 namespace Blish_HUD {
     public static class SpriteFontExtensions {
-
         /// <summary>
         /// Converts a <see cref="SpriteFont"/> to a <see cref="BitmapFontEx"/>.
         /// </summary>
@@ -38,9 +37,7 @@ namespace Blish_HUD {
 
                 regions.Add(region);
             }
-
             return new BitmapFontEx($"{typeof(BitmapFontEx)}_{Guid.NewGuid():n}", regions, lineHeight > 0 ? lineHeight : font.LineSpacing, font.Texture);
         }
-
     }
 }
