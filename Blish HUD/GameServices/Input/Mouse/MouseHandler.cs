@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Windows.Forms;
 using Blish_HUD.Controls;
-using Blish_HUD.Controls.Extern;
 using Blish_HUD.Input.WinApi;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
@@ -174,20 +173,21 @@ namespace Blish_HUD.Input {
         }
 
         /// <summary>
-        /// Meant to simulate missing parts of mouse events (LeftMouseButtonPressed and RightMouseButtonPressed) in case the mouse hook just got enabled. This was not an issue prior to a fix for issue #768 as e.g. the base Control just always operated with the release event.
-        /// Now that the event handling there requires a prime state setup by the respective pressed event this logic exists to simulate said event. This saves us from having to pass down a special case flag to all handlers and aims to keep behaviour consistent since
+        /// Meant to simulate missing parts of mouse events (LeftMouseButtonPressed and RightMouseButtonPressed) in case the mouse hook just got enabled. This was not an "issue" prior to a fix for issue #768 as e.g. the base control just always operated with the release event.
+        /// Now that the event handling there requires a primed state setup by the respective pressed event this logic exists to simulate said event. This saves us from having to pass down a special case flag to the handlers and aims to keep behaviour consistent since
         /// there will always be a press and release event and not sometimes just half of it. 
         /// </summary>
         /// <param name="mouseEvent">Current mouse event that we need to simulate the missing part for given its one of the 2 cases we even want to handle</param>
         private void SimulateNonCapturePressedEvent(MouseEventArgs mouseEvent) {
+            // What state keeping do we need to even mess with? (Considering public fields of this class accessed by other methods in the handler chain)
             // no need to worry about PositionRaw as it will be the same as the simulated event
             // no need to worry about CameraDragging as it will be the same as the simulated event
-            // ActiveControl is not changed by the mouse event so we also dont have to worry about that one either
+            // ActiveControl is not changed by the mouse event so we also dont have to worry about that one either (targets of the events may choose to alter this as necessary but that is normal behaviour then)
 
-            // need to modify the State but it's basically just a copy with changed mouse states
+            // need to modify the State but it's basically just a copy with changed mouse button pressed states
 
             // we don't necessarily have to check the previous mouse state here as an additional security as this can only be happening on the enable / disable chain right now
-            // -> the previous state may also be a dangling leftover
+            // -> the previous state may also be a dangling leftover so it should even be safer to ignore it
 
             if (_mouseEvent.EventType == MouseEventType.LeftMouseButtonReleased) {
                 var tmpState = this.State;
@@ -199,7 +199,7 @@ namespace Blish_HUD.Input {
                                             tmpState.RightButton,
                                             tmpState.XButton1,
                                             tmpState.XButton2);
-                // currently unsure if the MouseData and Flags contained any additional information about the button state maybe requires some bitmagic ..
+                // currently unsure if the MouseData and Flags contained any additional information about the button state maybe requires some bitmagic .. (both seem to always be 0 right now?)
                 HandleMouseEvent(new MouseEventArgs(MouseEventType.LeftMouseButtonPressed, mouseEvent.PointX, mouseEvent.PointY, mouseEvent.MouseData, mouseEvent.Flags, mouseEvent.Time, mouseEvent.Extra));
                 this.State = tmpState;
             } else if (_mouseEvent.EventType == MouseEventType.RightMouseButtonReleased) {
@@ -212,7 +212,7 @@ namespace Blish_HUD.Input {
                                             Microsoft.Xna.Framework.Input.ButtonState.Pressed,
                                             tmpState.XButton1,
                                             tmpState.XButton2);
-                // currently unsure if the MouseData and Flags contained any additional information about the button state maybe requires some bitmagic ..
+                // currently unsure if the MouseData and Flags contained any additional information about the button state maybe requires some bitmagic .. (both seem to always be 0 right now?)
                 HandleMouseEvent(new MouseEventArgs(MouseEventType.RightMouseButtonPressed, mouseEvent.PointX, mouseEvent.PointY, mouseEvent.MouseData, mouseEvent.Flags, mouseEvent.Time, mouseEvent.Extra));
                 this.State = tmpState;
             }
@@ -229,7 +229,7 @@ namespace Blish_HUD.Input {
         }
 
         public void OnDisable() {
-            // shouldn't be needed even but can't hurt to tidy up a little
+            // shouldn't be needed but can't hurt to tidy up a little
             _recentlyEnabled = false;
         }
 
