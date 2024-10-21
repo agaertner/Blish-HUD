@@ -189,8 +189,8 @@ namespace Blish_HUD.Input {
             // we don't necessarily have to check the previous mouse state here as an additional security as this can only be happening on the enable / disable chain right now
             // -> the previous state may also be a dangling leftover so it should even be safer to ignore it
 
-            if (_mouseEvent.EventType == MouseEventType.LeftMouseButtonReleased) {
-                var tmpState = this.State;
+            var tmpState = this.State;
+            if (mouseEvent.EventType == MouseEventType.LeftMouseButtonReleased) {
                 this.State = new MouseState(tmpState.X,
                                             tmpState.Y,
                                             tmpState.ScrollWheelValue,
@@ -201,9 +201,7 @@ namespace Blish_HUD.Input {
                                             tmpState.XButton2);
                 // currently unsure if the MouseData and Flags contained any additional information about the button state maybe requires some bitmagic .. (both seem to always be 0 right now?)
                 HandleMouseEvent(new MouseEventArgs(MouseEventType.LeftMouseButtonPressed, mouseEvent.PointX, mouseEvent.PointY, mouseEvent.MouseData, mouseEvent.Flags, mouseEvent.Time, mouseEvent.Extra));
-                this.State = tmpState;
-            } else if (_mouseEvent.EventType == MouseEventType.RightMouseButtonReleased) {
-                var tmpState = this.State;
+            } else if (mouseEvent.EventType == MouseEventType.RightMouseButtonReleased) {
                 this.State = new MouseState(tmpState.X,
                                             tmpState.Y,
                                             tmpState.ScrollWheelValue,
@@ -214,8 +212,8 @@ namespace Blish_HUD.Input {
                                             tmpState.XButton2);
                 // currently unsure if the MouseData and Flags contained any additional information about the button state maybe requires some bitmagic .. (both seem to always be 0 right now?)
                 HandleMouseEvent(new MouseEventArgs(MouseEventType.RightMouseButtonPressed, mouseEvent.PointX, mouseEvent.PointY, mouseEvent.MouseData, mouseEvent.Flags, mouseEvent.Time, mouseEvent.Extra));
-                this.State = tmpState;
             }
+            this.State = tmpState;
         }
 
         private void HandleMouseEvent(MouseEventArgs mouseEvent) {
